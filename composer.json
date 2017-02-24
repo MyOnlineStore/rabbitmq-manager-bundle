@@ -21,5 +21,8 @@
     },
     "replace": {
         "phobetor/rabbitmq-supervisor-bundle": "~2.0"
+    },
+    "suggest": {
+        "symfony/framework-bundle": "To use this lib as a full Symfony Bundle and to use the profiler data collector"
     }
 }
