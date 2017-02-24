@@ -1,0 +1,13 @@
+{
+    "name": "myonlinestore/rabbitmq-manager-bundle",
+    "type": "symfony-bundle",
+    "description": "Configuration generator for RabbitMQ with Supervisord and rabbitmq-cli-consumer support",
+    "keywords": ["RabbitMQ", "supervisord", "rabbitmq-cli-consumer"],
+    "homepage": "https://github.com/MyOnlineStore/rabbitmq-manager-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MyOnlineStore\\RabbitMqManagerBundle\\": "src"
+        }
+    }
+}
