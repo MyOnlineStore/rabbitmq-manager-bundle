@@ -1,6 +1,6 @@
 <?php
 
-namespace MyOnlineStore\RabbitMqManagerBundle;
+namespace MyOnlineStore\Bundle\RabbitMqManagerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

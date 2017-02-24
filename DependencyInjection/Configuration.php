@@ -1,6 +1,6 @@
 <?php
 
-namespace MyOnlineStore\RabbitMqManagerBundle\DependencyInjection;
+namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

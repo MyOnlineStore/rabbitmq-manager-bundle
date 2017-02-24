@@ -1,6 +1,6 @@
 <?php
 
-namespace MyOnlineStore\RabbitMqManagerBundle\Services;
+namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Services;
 
 use Symfony\Component\Process\Process;
 

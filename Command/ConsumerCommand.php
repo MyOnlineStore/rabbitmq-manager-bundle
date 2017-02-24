@@ -1,6 +1,6 @@
 <?php
 
-namespace MyOnlineStore\RabbitMqManagerBundle\Command;
+namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Command;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

@@ -1,6 +1,6 @@
 parameters:
-    phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class: MyOnlineStore\RabbitMqManagerBundle\Services\RabbitMqSupervisor
-    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\RabbitMqManagerBundle\Services\Supervisor
+    phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\RabbitMqSupervisor
+    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\Supervisor
 
 services:
     phobetor_rabbitmq_supervisor:
