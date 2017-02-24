@@ -1,0 +1,15 @@
+{%- set executable -%}
+    nice -n 10 php {{ consumer.command.console }} --callback={{ consumer.callback }} {{ consumer.command.arguments|join(' ') }} {{ consumer.command.command }}
+{%- endset -%}
+
+[program:{{ consumer.name }}]
+command=nice -n 10 rabbitmq-cli-consumer --strict-exit-code --include --configuration="{{ configuration }}" --executable="{{ executable }}"
+process_name=%(program_name)s%(process_num)02d
+numprocs={{ consumer.supervisor.count }}
+startsecs={{ consumer.supervisor.startsecs }}
+autorestart={% if consumer.supervisor.autorestart %}1{% else %}0{% endif %}
+
+stopsignal={{ consumer.supervisor.stopsignal }}
+stopwaitsecs={{ consumer.supervisor.stopwaitsecs }}
+stdout_logfile={{ path }}/logs/supervisor_{{ consumer.name }}.log
+stderr_logfile={{ path }}/logs/supervisor_{{ consumer.name }}.error

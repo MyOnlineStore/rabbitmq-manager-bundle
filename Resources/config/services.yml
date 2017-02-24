@@ -1,0 +1,18 @@
+parameters:
+    phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class: MyOnlineStore\RabbitMqManagerBundle\Services\RabbitMqSupervisor
+    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\RabbitMqManagerBundle\Services\Supervisor
+
+services:
+    phobetor_rabbitmq_supervisor:
+        class: "%phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class%"
+        arguments:
+            - "@phobetor_rabbitmq_supervisor.supervisor_service"
+            - "@templating"
+            - "%mos_rabbitmq_cli_consumer.config%"
+            - "%kernel.name%"
+
+    phobetor_rabbitmq_supervisor.supervisor_service:
+        class: "%phobetor_rabbitmq_supervisor.supervisor_service.class%"
+        arguments:
+            - "%mos_rabbitmq_cli_consumer.config%"
+            - "%kernel.name%"

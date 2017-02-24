@@ -1,0 +1,35 @@
+[rabbitmq]
+host={{ consumer.connection.host }}
+username={{ consumer.connection.user }}
+password={{ consumer.connection.password }}
+vhost={{ consumer.connection.vhost }}
+port={{ consumer.connection.port }}
+queue={{ consumer.worker.queue.name }}
+compression={% if consumer.worker.compression %}On{% else %}Off{% endif %}
+
+{% if consumer.worker.prefetch.count > 0 %}
+
+[prefetch]
+count={{ consumer.worker.prefetch.count }}
+global={% if consumer.worker.prefetch.global %}On{% else %}Off{% endif %}
+{% endif %}
+
+{% if consumer.worker.exchange %}
+
+[exchange]
+name={{ consumer.worker.exchange.name }}
+autodelete={% if consumer.worker.exchange.autodelete %}On{% else %}Off{% endif %}
+
+type={{ consumer.worker.exchange.type }}
+durable={% if consumer.worker.exchange.durable %}On{% else %}Off{% endif %}
+{% endif %}
+
+{% if routing_key %}
+
+[queuesettings]
+routingkey={{ routing_key }}
+{% endif %}
+
+[logs]
+error={{ path }}/logs/{{ consumer.name }}.error
+info={{ path }}/logs/{{ consumer.name }}.info
