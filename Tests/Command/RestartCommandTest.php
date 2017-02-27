@@ -3,7 +3,7 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\RestartCommand;
-use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManagerInterface;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGeneratorInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class RestartCommandTest extends BaseCommandTest
@@ -21,13 +21,13 @@ class RestartCommandTest extends BaseCommandTest
 
     public function testExecuteWithoutGenerate()
     {
-        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
-            $service = $this->getMock(RabbitMqManagerInterface::class)
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager.supervisor')->willReturn(
+            $supervisor = $this->getMock(RabbitMqConfigGeneratorInterface::class)
         );
 
-        $service->expects($this->never())->method('generate');
-        $service->expects($this->once())->method('stop');
-        $service->expects($this->once())->method('start');
+        $supervisor->expects($this->never())->method('generate');
+        $supervisor->expects($this->once())->method('stop');
+        $supervisor->expects($this->once())->method('start');
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute([]);

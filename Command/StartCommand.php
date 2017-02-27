@@ -2,6 +2,7 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Command;
 
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Exception\Supervisor\SupervisorAlreadyRunningException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,12 +27,15 @@ class StartCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $handler = $this->getContainer()->get('myonlinestore_rabbitmq_manager');
-
         if ($input->getOption('generate')) {
-            $handler->generate();
+            $this->getContainer()->get('myonlinestore_rabbitmq_manager.config_generator')->generate();
         }
 
-        $handler->start();
+        try {
+            $this->getContainer()->get('myonlinestore_rabbitmq_manager.supervisor')->start();
+            $output->writeln('Supervisord is started');
+        } catch (SupervisorAlreadyRunningException $exception) {
+            $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
+        }
     }
 }

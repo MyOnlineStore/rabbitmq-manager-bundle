@@ -26,13 +26,12 @@ class RestartCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $handler = $this->getContainer()->get('myonlinestore_rabbitmq_manager');
-
         if ($input->getOption('generate')) {
-            $handler->generate();
+            $this->getContainer()->get('myonlinestore_rabbitmq_manager.config_generator')->generate();
         }
 
-        $handler->stop();
-        $handler->start();
+        $supervisor = $this->getContainer()->get('myonlinestore_rabbitmq_manager.supervisor');
+        $supervisor->stop();
+        $supervisor->start();
     }
 }

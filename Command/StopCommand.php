@@ -24,7 +24,6 @@ class StopCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $handler = $this->getContainer()->get('myonlinestore_rabbitmq_manager');
-        $handler->stop();
+        $this->getContainer()->get('myonlinestore_rabbitmq_manager.supervisor')->stop();
     }
 }

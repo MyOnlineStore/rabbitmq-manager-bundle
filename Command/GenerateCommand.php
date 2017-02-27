@@ -24,7 +24,6 @@ class GenerateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $handler = $this->getContainer()->get('myonlinestore_rabbitmq_manager');
-        $handler->generate();
+        $this->getContainer()->get('myonlinestore_rabbitmq_manager.config_generator')->generate();
     }
 }

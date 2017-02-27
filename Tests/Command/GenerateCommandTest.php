@@ -3,7 +3,7 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\GenerateCommand;
-use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManagerInterface;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGeneratorInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class GenerateCommandTest extends BaseCommandTest
@@ -22,11 +22,11 @@ class GenerateCommandTest extends BaseCommandTest
 
     public function testExecute()
     {
-        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
-            $service = $this->getMock(RabbitMqManagerInterface::class)
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager.config_generator')->willReturn(
+            $generator = $this->getMock(RabbitMqConfigGeneratorInterface::class)
         );
 
-        $service->expects($this->once())->method('generate');
+        $generator->expects($this->once())->method('generate');
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute([]);

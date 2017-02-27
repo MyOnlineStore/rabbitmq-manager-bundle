@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('path')->defaultValue('%kernel.root_dir%/../var/supervisor')->end()
+                ->scalarNode('path')->defaultValue('%kernel.root_dir%/../var/supervisor/%kernel.name%')->end()
             ->end();
         $this->addCommands($rootNode);
         $this->addConsumer($rootNode);

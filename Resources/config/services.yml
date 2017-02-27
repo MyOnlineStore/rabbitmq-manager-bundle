@@ -1,18 +1,15 @@
 parameters:
-    myonlinestore_rabbitmq_manager.rabbitmq_manager.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManager
-    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\Supervisor
+    myonlinestore_rabbitmq_manager.config_generator.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGenerator
+    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\Supervisor
 
 services:
-    myonlinestore_rabbitmq_manager:
-        class: "%myonlinestore_rabbitmq_manager.rabbitmq_manager.class%"
+    myonlinestore_rabbitmq_manager.config_generator:
+        class: "%myonlinestore_rabbitmq_manager.config_generator.class%"
         arguments:
-            - "@phobetor_rabbitmq_supervisor.supervisor_service"
             - "@templating"
             - "%mos_rabbitmq_cli_consumer.config%"
-            - "%kernel.name%"
 
-    phobetor_rabbitmq_supervisor.supervisor_service:
+    myonlinestore_rabbitmq_manager.supervisor:
         class: "%phobetor_rabbitmq_supervisor.supervisor_service.class%"
         arguments:
             - "%mos_rabbitmq_cli_consumer.config%"
-            - "%kernel.name%"
