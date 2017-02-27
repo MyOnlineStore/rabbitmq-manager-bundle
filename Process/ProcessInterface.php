@@ -4,10 +4,8 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Process;
 
 use Symfony\Component\Process\Exception\InvalidArgumentException;
 use Symfony\Component\Process\Exception\LogicException;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException;
-use Symfony\Component\Process\Process;
 
 interface ProcessInterface
 {
@@ -352,7 +350,7 @@ interface ProcessInterface
      *
      * @param bool $bool
      *
-     * @return Process
+     * @return ProcessInterface
      */
     public function setPty($bool);
 
@@ -397,7 +395,7 @@ interface ProcessInterface
      *
      * @param array $env The new environment variables
      *
-     * @return Process
+     * @return ProcessInterface
      */
     public function setEnv(array $env);
 

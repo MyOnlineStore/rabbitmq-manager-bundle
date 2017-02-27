@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Process;
 
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Process as SymfonyProcess;
 
 interface ProcessFactoryInterface
 {
@@ -26,9 +26,9 @@ interface ProcessFactoryInterface
     );
 
     /**
-     * @param Process $process
+     * @param SymfonyProcess $process
      *
      * @return ProcessInterface
      */
-    public function createFromProcess(Process $process);
+    public function createFromProcess(SymfonyProcess $process);
 }
