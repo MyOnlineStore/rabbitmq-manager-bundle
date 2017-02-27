@@ -23,4 +23,5 @@ services:
     myonlinestore_rabbitmq_manager.supervisor:
         class: "%phobetor_rabbitmq_supervisor.supervisor_service.class%"
         arguments:
+            - "@myonlinestore_rabbitmq_manager.process_builder_factory"
             - "%mos_rabbitmq_cli_consumer.config%"

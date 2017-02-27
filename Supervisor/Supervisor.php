@@ -3,20 +3,28 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Exception\Supervisor\SupervisorAlreadyRunningException;
-use Symfony\Component\Process\Process;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactoryInterface;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessInterface;
 
 class Supervisor implements SupervisorInterface
 {
+    /**
+     * @var ProcessBuilderFactoryInterface
+     */
+    private $processBuilderFactory;
+
     /**
      * @var string
      */
     private $path;
 
     /**
-     * @param array $config
+     * @param ProcessBuilderFactoryInterface $processBuilderFactory
+     * @param array                          $config
      */
-    public function __construct(array $config)
+    public function __construct(ProcessBuilderFactoryInterface $processBuilderFactory, array $config)
     {
+        $this->processBuilderFactory = $processBuilderFactory;
         $this->path = $config['path'];
     }
 
@@ -39,16 +47,13 @@ class Supervisor implements SupervisorInterface
             throw new SupervisorAlreadyRunningException('supervisor is already running.');
         }
 
-        $process = new Process(
-            sprintf(
-                'supervisord%1$s%2$s',
-                sprintf(' --configuration=%s/%s', $this->path, 'supervisord.conf'),
-                sprintf(' --identifier=%s', sha1($this->path))
-            )
-        );
+        $processBuilder = $this->processBuilderFactory->create();
+        $processBuilder->setWorkingDirectory($this->path);
+        $processBuilder->setPrefix('supervisord');
+        $processBuilder->add(sprintf('--configuration=%s/%s', $this->path, 'supervisord.conf'));
+        $processBuilder->add(sprintf('--identifier=%s', sha1($this->path)));
 
-        $process->setWorkingDirectory($this->path);
-        $process->run();
+        $processBuilder->getProcess()->run();
     }
 
     /**
@@ -95,19 +100,18 @@ class Supervisor implements SupervisorInterface
     /**
      * @param string $cmd supervisorctl command
      *
-     * @return Process
+     * @return ProcessInterface
      */
-    public function execute($cmd)
+    private function execute($cmd)
     {
-        $process = new Process(
-            sprintf(
-                'supervisorctl%1$s %2$s',
-                sprintf(' --configuration=%s/%s', $this->path, 'supervisord.conf'),
-                $cmd
-            )
-        );
+        $processBuilder = $this->processBuilderFactory->create();
+        $processBuilder->setWorkingDirectory($this->path);
+        $processBuilder->setPrefix('supervisorctl');
+        $processBuilder->add(sprintf('--configuration=%s/%s', $this->path, 'supervisord.conf'));
+        $processBuilder->add($cmd);
 
-        $process->setWorkingDirectory($this->path);
+        $process = $processBuilder->getProcess();
+
         $process->run();
         $process->wait();
 

@@ -22,7 +22,6 @@ class ProcessBuilder extends SymfonyProcessBuilder implements ProcessBuilderInte
         $this->processFactory = $processFactory;
     }
 
-
     /**
      * @inheritdoc
      */

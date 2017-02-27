@@ -444,4 +444,6 @@ interface ProcessInterface
      * @throws ProcessTimedOutException In case the timeout was reached
      */
     public function checkTimeout();
+
+    public function wait();
 }
