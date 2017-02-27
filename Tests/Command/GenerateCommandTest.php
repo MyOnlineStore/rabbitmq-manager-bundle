@@ -3,7 +3,7 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\GenerateCommand;
-use MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\RabbitMqSupervisor;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManagerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class GenerateCommandTest extends BaseCommandTest
@@ -22,8 +22,8 @@ class GenerateCommandTest extends BaseCommandTest
 
     public function testExecute()
     {
-        $this->container->expects($this->once())->method('get')->with('phobetor_rabbitmq_supervisor')->willReturn(
-            $service = $this->getMockBuilder(RabbitMqSupervisor::class)->disableOriginalConstructor()->getMock()
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
+            $service = $this->getMock(RabbitMqManagerInterface::class)
         );
 
         $service->expects($this->once())->method('generate');

@@ -3,7 +3,8 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\StartCommand;
-use MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\RabbitMqSupervisor;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManager;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManagerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class StartCommandTest extends BaseCommandTest
@@ -21,8 +22,8 @@ class StartCommandTest extends BaseCommandTest
 
     public function testExecuteWithoutGenerate()
     {
-        $this->container->expects($this->once())->method('get')->with('phobetor_rabbitmq_supervisor')->willReturn(
-            $service = $this->getMockBuilder(RabbitMqSupervisor::class)->disableOriginalConstructor()->getMock()
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
+            $service = $this->getMock(RabbitMqManagerInterface::class)
         );
 
         $service->expects($this->never())->method('generate');
@@ -34,8 +35,8 @@ class StartCommandTest extends BaseCommandTest
 
     public function testExecute()
     {
-        $this->container->expects($this->once())->method('get')->with('phobetor_rabbitmq_supervisor')->willReturn(
-            $service = $this->getMockBuilder(RabbitMqSupervisor::class)->disableOriginalConstructor()->getMock()
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
+            $service = $this->getMockBuilder(RabbitMqManager::class)->disableOriginalConstructor()->getMock()
         );
 
         $service->expects($this->once())->method('generate');

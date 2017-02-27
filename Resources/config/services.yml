@@ -1,10 +1,10 @@
 parameters:
-    phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\RabbitMqSupervisor
+    myonlinestore_rabbitmq_manager.rabbitmq_manager.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManager
     phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\Supervisor
 
 services:
-    phobetor_rabbitmq_supervisor:
-        class: "%phobetor_rabbitmq_supervisor.rabbitmq_supervisor_service.class%"
+    myonlinestore_rabbitmq_manager:
+        class: "%myonlinestore_rabbitmq_manager.rabbitmq_manager.class%"
         arguments:
             - "@phobetor_rabbitmq_supervisor.supervisor_service"
             - "@templating"

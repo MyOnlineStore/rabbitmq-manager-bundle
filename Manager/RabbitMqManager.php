@@ -1,10 +1,11 @@
 <?php
 
-namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Services;
+namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager;
 
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Services\Supervisor;
 use Symfony\Component\Templating\EngineInterface;
 
-class RabbitMqSupervisor
+class RabbitMqManager implements RabbitMqManagerInterface
 {
     /**
      * @var Supervisor
@@ -41,7 +42,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Generate all supervisor worker configuration files
+     * @inheritdoc
      */
     public function generate()
     {
@@ -145,7 +146,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Stop supervisord and all processes
+     * @inheritdoc
      */
     public function stop()
     {
@@ -153,7 +154,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Start supervisord and all processes
+     * @inheritdoc
      */
     public function start()
     {
@@ -162,7 +163,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Send -HUP to supervisord to gracefully restart all processes
+     * @inheritdoc
      */
     public function hup()
     {
@@ -170,10 +171,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Send kill signal to supervisord
-     *
-     * @param string $signal
-     * @param bool $waitForProcessToDisappear
+     * @inheritdoc
      */
     public function kill($signal = '', $waitForProcessToDisappear = false)
     {
@@ -194,7 +192,7 @@ class RabbitMqSupervisor
     }
 
     /**
-     * Wait for supervisord process to disappear
+     * @inheritdoc
      */
     public function wait()
     {
@@ -257,6 +255,5 @@ class RabbitMqSupervisor
 
             unlink($item->getRealPath());
         }
-
     }
 }
