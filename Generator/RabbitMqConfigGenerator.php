@@ -2,28 +2,41 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator;
 
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactoryInterface;
+use Supervisor\Configuration\Section\RpcInterface;
+use Supervisor\Configuration\Section\Supervisorctl;
+use Supervisor\Configuration\Section\UnixHttpServer;
+use Supervisor\Configuration\Configuration;
+use Supervisor\Configuration\Section\Supervisord;
+use Supervisor\Configuration\Section\Program;
+use Indigo\Ini\Renderer;
 use Symfony\Component\Templating\EngineInterface;
 
 class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
 {
+    /**
+     * @var array
+     */
+    private $config;
+    /**
+     * @var ProcessBuilderFactoryInterface
+     */
+    private $processBuilderFactory;
     /**
      * @var EngineInterface
      */
     private $templating;
 
     /**
-     * @var array
+     * @param ProcessBuilderFactoryInterface $processBuilderFactory
+     * @param EngineInterface                $templating
+     * @param array                          $config
      */
-    private $config;
-
-    /**
-     * @param EngineInterface $templating
-     * @param array           $config
-     */
-    public function __construct(EngineInterface $templating, array $config)
+    public function __construct(ProcessBuilderFactoryInterface $processBuilderFactory, EngineInterface $templating, array $config)
     {
-        $this->templating = $templating;
         $this->config = $config;
+        $this->processBuilderFactory = $processBuilderFactory;
+        $this->templating = $templating;
     }
 
     /**
@@ -38,50 +51,54 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
             ));
         }
 
-        // create directory structure
-        foreach (['worker' => true, 'conf.d' => true, 'logs' => false] as $directory => $cleanup) {
-            $path = sprintf('%s/%s', $this->config['path'], $directory);
+        $configuration = new Configuration();
+        $renderer = new Renderer();
 
-            if (!is_dir($path)) {
-                mkdir($path, 0755);
-            }
+        $configuration->addSection(new UnixHttpServer([
+            'file' => sprintf('%s/supervisord.sock', $this->config['path']),
+            'chmod' => 700,
+        ]));
 
-            if ($cleanup) {
-                $this->cleanup($path);
-            }
-        }
+        $configuration->addSection(new Supervisord([
+            'logfile' => sprintf('%s/supervisord.log', $this->config['path']),
+            'pidfile' => sprintf('%s/supervisord.pid', $this->config['path']),
+        ]));
 
-        file_put_contents(
-            sprintf('%s/%s', $this->config['path'], 'supervisord.conf'),
-            $this->templating->render(
-                'RabbitMqManagerBundle:Supervisor:supervisor.conf.twig', [
-                    'path' => $this->config['path'],
-                ]
-            )
-        );
+        $configuration->addSection(new RpcInterface('supervisor', [
+            'supervisor.rpcinterface_factory' => 'supervisor.rpcinterface:make_main_rpcinterface',
+        ]));
+
+        $configuration->addSection(new Supervisorctl([
+            'serverurl' => sprintf('unix://%s/supervisord.sock', $this->config['path']),
+        ]));
 
         foreach (['consumers', 'rpc_servers'] as $type) {
             foreach ($this->config[$type] as $name => $consumer) {
                 if (!isset($consumer['worker']['queue']['routing'])) {
-                    $this->writeConfig(
+                    $configuration->addSection($this->getProgramSection(
                         sprintf('%s_%s', $type, $name),
                         $this->config['path'],
                         $consumer
-                    );
+                    ));
 
                     continue;
                 }
 
                 foreach ($consumer['worker']['queue']['routing'] as $index => $route) {
-                    $this->writeConfig(
+                    $configuration->addSection($this->getProgramSection(
                         sprintf('%s_%s_%s', $type, $name, $index),
                         $this->config['path'],
                         $consumer,
                         $route
-                    );
+                    ));
                 }
             }
         }
+
+        file_put_contents(
+            sprintf('%s/%s', $this->config['path'], 'supervisord.conf'),
+            $renderer->render($configuration->toArray())
+        );
     }
 
     /**
@@ -89,13 +106,23 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
      * @param string $path
      * @param array  $consumer
      * @param null   $route
+     *
+     * @return Program
      */
-    private function writeConfig($name, $path, array $consumer, $route = null)
+    public function getProgramSection($name, $path, array $consumer, $route = null)
     {
+        $processBuilder = $this->processBuilderFactory->create();
+        $processBuilder->setPrefix(['php']);
+        $processBuilder->add($consumer['command']['console']);
+
+        foreach ($consumer['command']['arguments'] as $argument) {
+            $processBuilder->add($argument);
+        }
+
         if ('cli-consumer' === $consumer['processor']) {
             // write additional cli-consumer config
             file_put_contents(
-                $consumerConfiguration = sprintf('%s/worker/%s.conf', $path, $name),
+                $consumerConfiguration = sprintf('%s/%s.conf', $path, $name),
                 $this->templating->render('RabbitMqManagerBundle:Supervisor:consumer.conf.twig', [
                     'path' => $path,
                     'routing_key' => $route,
@@ -103,46 +130,37 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
                 ])
             );
 
-            $content = $this->templating->render('RabbitMqManagerBundle:Supervisor/processor:cli-consumer.conf.twig', [
-                'path' => $path,
-                'configuration' => $consumerConfiguration,
-                'consumer' => $consumer,
-            ]);
+            $processBuilder->add($consumer['command']['command']);
+            $processBuilder->add($consumer['name']);
+
+            $consumerProcessBuilder = $this->processBuilderFactory->create();
+            $consumerProcessBuilder->setPrefix(['rabbitmq-cli-consumer']);
+            $consumerProcessBuilder->add('--strict-exit-code');
+            $consumerProcessBuilder->add('--include');
+            $consumerProcessBuilder->add(sprintf('--configuration=%s', $consumerConfiguration));
+            $consumerProcessBuilder->add(sprintf('--executable=%s', $processBuilder->getProcess()->getCommandLine()));
+
+            $process = $consumerProcessBuilder->getProcess();
         } else {
-            $consumer['command']['arguments'][] = sprintf('--messages=%s', $consumer['messages']);
+            $processBuilder->add(sprintf('--messages=%s', $consumer['messages']));
 
             if (null !== $route) {
-                $consumer['command']['arguments'][] = sprintf('--route=%s', $route);
+                $processBuilder->add(sprintf('--route=%s', $route));
             }
 
-            $content = $this->templating->render('RabbitMqManagerBundle:Supervisor/processor:bundle.conf.twig', [
-                'path' => $path,
-                'consumer' => $consumer,
-            ]);
+            $processBuilder->add($consumer['command']['command']);
+            $processBuilder->add($consumer['name']);
+            $process = $processBuilder->getProcess();
         }
 
-        file_put_contents(
-            sprintf('%s/conf.d/%s.conf', $path, $name),
-            $content
-        );
-    }
-
-    /**
-     * @param string $path
-     */
-    private function cleanup($path)
-    {
-        /** @var \SplFileInfo $item */
-        foreach (new \DirectoryIterator($path) as $item) {
-            if ($item->isDir()) {
-                continue;
-            }
-
-            if ('conf' !== $item->getExtension()) {
-                continue;
-            }
-
-            unlink($item->getRealPath());
-        }
+        return new Program($name, [
+            'command' => $process->getCommandLine(),
+            'process_name' => '%(program_name)s%(process_num)02d',
+            'numprocs' => $consumer['supervisor']['count'],
+            'startsecs' => $consumer['supervisor']['startsecs'],
+            'autorestart' => $consumer['supervisor']['autorestart'],
+            'stopsignal' => $consumer['supervisor']['stopsignal'],
+            'stopwaitsecs' => $consumer['supervisor']['stopwaitsecs'],
+        ]);
     }
 }

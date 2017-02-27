@@ -1,11 +1,22 @@
 parameters:
+    myonlinestore_rabbitmq_manager.process_builder_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactory
+    myonlinestore_rabbitmq_manager.process_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessFactory
     myonlinestore_rabbitmq_manager.config_generator.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGenerator
     phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\Supervisor
 
 services:
+    myonlinestore_rabbitmq_manager.process_builder_factory:
+        class: "%myonlinestore_rabbitmq_manager.process_builder_factory.class%"
+        arguments:
+            - "@myonlinestore_rabbitmq_manager.process_factory"
+
+    myonlinestore_rabbitmq_manager.process_factory:
+        class: "%myonlinestore_rabbitmq_manager.process_factory.class%"
+
     myonlinestore_rabbitmq_manager.config_generator:
         class: "%myonlinestore_rabbitmq_manager.config_generator.class%"
         arguments:
+            - "@myonlinestore_rabbitmq_manager.process_builder_factory"
             - "@templating"
             - "%mos_rabbitmq_cli_consumer.config%"
 

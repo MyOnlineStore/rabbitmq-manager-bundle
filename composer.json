@@ -19,7 +19,8 @@
         "symfony/yaml": "~2.7 || ~3.0",
         "symfony/console": "~2.7 || ~3.0",
         "symfony/process": "~2.7 || ~3.0",
-        "supervisorphp/configuration": "^0.2.1"
+        "supervisorphp/configuration": "^0.2.1",
+        "symfony/templating": "^3.2"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8",
