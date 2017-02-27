@@ -1,4 +1,7 @@
 # rabbitmq-manager-bundle
-[![Build Status](https://travis-ci.org/MyOnlineStore/rabbitmq-manager-bundle.svg?branch=master)](https://travis-ci.org/MyOnlineStore/rabbitmq-manager-bundle)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/MyOnlineStore/rabbitmq-manager-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/MyOnlineStore/rabbitmq-manager-bundle/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/MyOnlineStore/rabbitmq-manager-bundle/badges/coverage.png?b=master&v1)](https://scrutinizer-ci.com/g/MyOnlineStore/rabbitmq-manager-bundle/?branch=master&v1)
+[![Latest Version](https://img.shields.io/github/release/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://github.com/supervisorphp/configuration/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/travis/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://travis-ci.org/supervisorphp/configuration)
+[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://scrutinizer-ci.com/g/supervisorphp/configuration)
+[![Quality Score](https://img.shields.io/scrutinizer/g/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://scrutinizer-ci.com/g/supervisorphp/configuration)
+[![Total Downloads](https://img.shields.io/packagist/dt/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://packagist.org/packages/supervisorphp/configuration)
