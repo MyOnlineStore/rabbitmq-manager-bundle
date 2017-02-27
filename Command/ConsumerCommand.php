@@ -2,6 +2,7 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Command;
 
+use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,7 +34,9 @@ https://github.com/ricbra/rabbitmq-cli-consumer
     {
         $data = json_decode(gzuncompress(base64_decode($input->getArgument('event'))), true);
 
+        /** @var ConsumerInterface $service */
         $service = $this->getContainer()->get($input->getOption('callback'));
+
         $service->execute(
             new AMQPMessage(
                 $data['body'],
