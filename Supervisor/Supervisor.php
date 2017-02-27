@@ -27,7 +27,7 @@ class Supervisor implements SupervisorInterface
     {
         $result = $this->execute('status')->getOutput();
 
-        return !(strpos($result, 'sock no such file') || strpos($result, 'refused connection'));
+        return !(false !== strpos($result, 'sock no such file') || false !== strpos($result, 'refused connection'));
     }
 
     /**
@@ -89,7 +89,7 @@ class Supervisor implements SupervisorInterface
      */
     public function getProcessId() {
 
-        return (int) $this->execute('pid');
+        return (int) $this->execute('pid')->getOutput();
     }
 
     /**
@@ -97,7 +97,7 @@ class Supervisor implements SupervisorInterface
      *
      * @return Process
      */
-    private function execute($cmd)
+    public function execute($cmd)
     {
         $process = new Process(
             sprintf(
