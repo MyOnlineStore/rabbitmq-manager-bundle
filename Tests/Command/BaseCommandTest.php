@@ -45,10 +45,14 @@ abstract class BaseCommandTest extends \PHPUnit_Framework_TestCase
     {
         $this->application = $this->getMockBuilder(Application::class)->disableOriginalConstructor()->getMock();
         $this->definition = $this->getMockBuilder(InputDefinition::class)->disableOriginalConstructor()->getMock();
-        $this->helperSet = $this->getMockBuilder(HelperSet::class)->getMock();
+        $this->helperSet = $this->getMockBuilder(HelperSet::class)->disableOriginalConstructor()->getMock();
 
         $this->application->expects($this->any())->method('getDefinition')->will(
             $this->returnValue($this->definition)
+        );
+
+        $this->application->expects($this->any())->method('getHelperSet')->will(
+            $this->returnValue($this->helperSet)
         );
 
         $this->application->expects($this->any())->method('getKernel')->willReturn(

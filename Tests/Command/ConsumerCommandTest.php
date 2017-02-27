@@ -16,9 +16,9 @@ class ConsumerCommandTest extends BaseCommandTest
 
         $this->definition->expects($this->any())
             ->method('getOptions')
-            ->will($this->returnValue(array(
+            ->willReturn([
                 new InputOption('--callback', null, InputOption::VALUE_REQUIRED, 'Callback service name'),
-            )));
+            ]);
 
         $this->application->expects($this->once())->method('getHelperSet')->will($this->returnValue($this->helperSet));
 
