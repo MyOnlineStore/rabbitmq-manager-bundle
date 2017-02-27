@@ -4,7 +4,9 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\RestartCommand;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGeneratorInterface;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\SupervisorInterface;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class RestartCommandTest extends BaseCommandTest
 {
@@ -22,10 +24,9 @@ class RestartCommandTest extends BaseCommandTest
     public function testExecuteWithoutGenerate()
     {
         $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager.supervisor')->willReturn(
-            $supervisor = $this->getMock(RabbitMqConfigGeneratorInterface::class)
+            $supervisor = $this->getMock(SupervisorInterface::class)
         );
 
-        $supervisor->expects($this->never())->method('generate');
         $supervisor->expects($this->once())->method('stop');
         $supervisor->expects($this->once())->method('start');
 
@@ -35,13 +36,23 @@ class RestartCommandTest extends BaseCommandTest
 
     public function testExecute()
     {
-        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
-            $service = $this->getMock(RabbitMqManagerInterface::class)
-        );
+        $generator = $this->getMock(RabbitMqConfigGeneratorInterface::class);
+        $supervisor = $this->getMock(SupervisorInterface::class);
 
-        $service->expects($this->once())->method('generate');
-        $service->expects($this->once())->method('stop');
-        $service->expects($this->once())->method('start');
+        $this->container->method('get')->willReturnCallback(function ($service) use ($generator, $supervisor) {
+            switch ($service) {
+                case 'myonlinestore_rabbitmq_manager.config_generator':
+                    return $generator;
+                case 'myonlinestore_rabbitmq_manager.supervisor':
+                    return $supervisor;
+            }
+
+            throw new ServiceNotFoundException($service);
+        });
+
+        $generator->expects($this->once())->method('generate');
+        $supervisor->expects($this->once())->method('stop');
+        $supervisor->expects($this->once())->method('start');
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute([

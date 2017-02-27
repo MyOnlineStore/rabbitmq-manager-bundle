@@ -3,7 +3,7 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\Command;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Command\StopCommand;
-use MyOnlineStore\Bundle\RabbitMqManagerBundle\Manager\RabbitMqManagerInterface;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\SupervisorInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class StopCommandTest extends BaseCommandTest
@@ -19,13 +19,13 @@ class StopCommandTest extends BaseCommandTest
         $this->command->setApplication($this->application);
     }
 
-    public function testExecute()
+    public function testExecuteWithoutGenerate()
     {
-        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager')->willReturn(
-            $service = $this->getMock(RabbitMqManagerInterface::class)
+        $this->container->expects($this->once())->method('get')->with('myonlinestore_rabbitmq_manager.supervisor')->willReturn(
+            $supervisor = $this->getMock(SupervisorInterface::class)
         );
 
-        $service->expects($this->once())->method('stop');
+        $supervisor->expects($this->once())->method('stop');
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute([]);
