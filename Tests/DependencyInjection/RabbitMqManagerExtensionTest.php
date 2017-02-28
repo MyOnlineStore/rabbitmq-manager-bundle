@@ -21,9 +21,7 @@ class RabbitMqManagerExtensionTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->containerBuilder = $this->getMockBuilder(ContainerBuilder::class)->disableOriginalConstructor()->getMock();
-        $this->extension = $this->getMock(RabbitMqManagerExtension::class, ['processConfiguration']);
-
-        $this->extension->method('processConfiguration')->willReturn($this->getDefaultConfiguration());
+        $this->extension = new RabbitMqManagerExtension();
     }
 
     public function testLoadWithRabbitMqConfiguration()
@@ -177,50 +175,5 @@ class RabbitMqManagerExtensionTest extends \PHPUnit_Framework_TestCase
             ['myonlinestore_rabbitmq_manager.config_generator.class'],
             ['phobetor_rabbitmq_supervisor.supervisor_service.class'],
             [$id, $value]);
-    }
-
-    protected function getDefaultConfiguration()
-    {
-        return [
-            'path' => '%kernel.root_dir%/../var/supervisor/%kernel.name%',
-            'commands' => [
-                'cli_consumer_invoker' => 'rabbitmq-manager:consumer',
-                'consumers' => 'rabbitmq:consumer',
-                'multiple_consumers' => 'rabbitmq:multiple-consumer',
-                'rpc_servers' => 'rabbitmq:rpc-server',
-            ],
-            'consumers' => [
-                'general' => [
-                    'processor' => 'bundle',
-                    'messages' => 0,
-                    'compression' => true,
-                    'worker' => [
-                        'count' => 1,
-                        'startsecs' => 0,
-                        'autorestart' => true,
-                        'stopsignal' => 'INT',
-                        'stopasgroup' => true,
-                        'stopwaitsecs' => 60,
-                    ],
-                ],
-                'individual' => [],
-            ],
-            'rpc_servers' => [
-                'general' => [
-                    'processor' => 'bundle',
-                    'messages' => 0,
-                    'compression' => true,
-                    'worker' => [
-                        'count' => 1,
-                        'startsecs' => 0,
-                        'autorestart' => true,
-                        'stopsignal' => 'INT',
-                        'stopasgroup' => true,
-                        'stopwaitsecs' => 60,
-                    ],
-                ],
-                'individual' => [],
-            ]
-        ];
     }
 }
