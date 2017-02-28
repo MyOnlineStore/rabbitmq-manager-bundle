@@ -23,17 +23,6 @@ class RabbitMqManagerExtension extends Extension implements PrependExtensionInte
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        // check that commands do not contain sprintf specifiers that were required by older versions
-        foreach ($config['commands'] as $command) {
-            if (false !== strpos($command, '%')) {
-                throw new InvalidConfigurationException(sprintf(
-                    'Invalid configuration for path "%s": %s',
-                    'rabbit_mq_supervisor.commands',
-                    'command is no longer allowed to contain sprintf specifiers (e.g. "%1$d")'
-                ));
-            }
-        }
-
         $configuration = [
             'path' => $config['path'],
             'consumers' => [],

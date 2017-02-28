@@ -105,6 +105,90 @@ class RabbitMqManagerExtensionTest extends \PHPUnit_Framework_TestCase
         $this->extension->load([], $this->containerBuilder);
     }
 
+
+    public function testLoadWithRabbitMqConfigurationAndCliConsumer()
+    {
+//        $this->extension->method('processConfiguration')->willReturn($this->getCliConsumerOverrideConfiguration());
+
+        $this->containerBuilder->method('getParameter')->with('mos_old_sound_rabbit_mq.config')->willReturn([
+            'connections' => [
+                'default' => [
+                    'host' => 'localhost',
+                    'port' => 656,
+                    'user' => 'guest',
+                    'password' => 'guest',
+                    'vhost' => '/',
+                ],
+            ],
+            'consumers' => [
+                'my_consumer' => [
+                    'callback' => 'my_callback_service',
+                    'exchange_options' => [
+                        'name' => 'exchange-name',
+                        'type' => 'direct',
+                    ],
+                    'queue_options' => [
+                        'name' => 'queue-name',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->setParameterWithYamlFileLoader('mos_rabbitmq_cli_consumer.config', [
+            'path' => '%kernel.root_dir%/../var/supervisor/%kernel.name%',
+            'consumers' => [
+                'my_consumer' => [
+                    'name' => 'my_consumer',
+                    'processor' => 'bundle',
+                    'messages' => 0,
+                    'callback' => 'my_callback_service',
+                    'connection' => [
+                        'host' => 'localhost',
+                        'port' => 656,
+                        'user' => 'guest',
+                        'password' => 'guest',
+                        'vhost' => '/',
+                    ],
+                    'supervisor' => [
+                        'count' => 1,
+                        'startsecs' => 0,
+                        'autorestart' => true,
+                        'stopsignal' => 'INT',
+                        'stopwaitsecs' => 60,
+                    ],
+                    'command' => [
+                        'console' => '%kernel.root_dir%/../bin/console',
+                        'command' => 'rabbitmq:consumer',
+                        'arguments' => [
+                            '--env=%kernel.environment%',
+                            '--app=%kernel.name%',
+                        ],
+                    ],
+                    'worker' => [
+                        'compression' => true,
+                        'prefetch' => [
+                            'count' => 0,
+                            'global' => false,
+                        ],
+                        'exchange' => [
+                            'name' => 'exchange-name',
+                            'type' => 'direct',
+                            'autodelete' => false,
+                            'durable' => true,
+                        ],
+                        'queue' => [
+                            'name' => 'queue-name',
+                            'routing' => null,
+                        ],
+                    ],
+                ],
+            ],
+            'rpc_servers' => [],
+        ]);
+
+        $this->extension->load([], $this->containerBuilder);
+    }
+
     public function testLoadWithRabbitMqConfigurationWithoutExistingConnection()
     {
         $this->setExpectedException(InvalidConfigurationException::class);
