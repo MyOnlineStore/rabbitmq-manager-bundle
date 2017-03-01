@@ -129,12 +129,12 @@ class SupervisorConfiguration
     }
 
     /**
-     * @param array       $consumer
-     * @param null|string $consumerConfiguration
+     * @param array  $consumer
+     * @param string $consumerConfiguration
      *
      * @return array
      */
-    public function getConsumerProperties(array $consumer, $consumerConfiguration = null)
+    public function getConsumerProperties(array $consumer, $consumerConfiguration)
     {
         $processBuilder = $this->processBuilderFactory->create();
         $processBuilder->setPrefix(['php']);

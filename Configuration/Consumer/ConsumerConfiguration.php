@@ -75,19 +75,6 @@ final class ConsumerConfiguration
             );
         }
 
-        if (isset($consumer['worker']['exchange'])) {
-            $sections->addSection(
-                $this->sectionFactory->createExchange(
-                    [
-                        'name' => $consumer['worker']['exchange']['name'],
-                        'type' => $consumer['worker']['exchange']['type'],
-                        'durable' => $consumer['worker']['exchange']['durable'],
-                        'autodelete' => $consumer['worker']['exchange']['autodelete'],
-                    ]
-                )
-            );
-        }
-
         if (null !== $route) {
             $sections->addSection(
                 $this->sectionFactory->createQueue(
