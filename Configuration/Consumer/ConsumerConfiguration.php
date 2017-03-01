@@ -4,7 +4,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer;
 
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Section\SectionCollection;
 
-final class ConsumerConfiguration
+class ConsumerConfiguration
 {
     /**
      * @var ConsumerSectionFactoryInterface

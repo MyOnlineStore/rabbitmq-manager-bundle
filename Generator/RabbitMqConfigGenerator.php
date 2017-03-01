@@ -3,6 +3,7 @@
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator;
 
 use Indigo\Ini\Renderer;
+use League\Flysystem\FilesystemInterface;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerConfiguration;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorConfiguration;
 
@@ -24,6 +25,11 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
     private $renderer;
 
     /**
+     * @var FilesystemInterface
+     */
+    private $filesystem;
+
+    /**
      * @var array
      */
     private $config;
@@ -32,17 +38,20 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
      * @param SupervisorConfiguration $supervisorConfiguration
      * @param ConsumerConfiguration   $consumerConfiguration
      * @param Renderer                $renderer
+     * @param FilesystemInterface     $filesystem
      * @param array                   $config
      */
     public function __construct(
         SupervisorConfiguration $supervisorConfiguration,
         ConsumerConfiguration $consumerConfiguration,
         Renderer $renderer,
+        FilesystemInterface $filesystem,
         array $config
     ) {
         $this->supervisorConfiguration = $supervisorConfiguration;
         $this->consumerConfiguration = $consumerConfiguration;
         $this->renderer = $renderer;
+        $this->filesystem = $filesystem;
         $this->config = $config;
     }
 
@@ -51,32 +60,22 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
      */
     public function generate()
     {
-        if (!is_dir($this->config['path']) && !mkdir($this->config['path'], 0755, true)) {
-            throw new \RuntimeException(
-                sprintf(
-                    'path "%s" could not be created',
-                    $this->config['path']
-                )
-            );
-        }
-
         $supervisorConfiguration = $this->supervisorConfiguration->generate();
 
         foreach (['consumers', 'rpc_servers'] as $type) {
-            foreach ($this->config[$type] as $name => $consumer) {
+            foreach ($this->config[$type] as $consumerName => $consumer) {
                 if (!isset($consumer['worker']['queue']['routing'])) {
                     // this can be moved to DI\Configuration
                     $consumer['worker']['queue']['routing'] = [null];
                 }
 
                 foreach ($consumer['worker']['queue']['routing'] as $index => $route) {
-                    $name = sprintf('%s_%s_%d', substr($type, 0, 1), $name, $index);
+                    $name = sprintf('%s_%s_%d', substr($type, 0, 1), $consumerName, $index);
 
                     if ('cli-consumer' === $consumer['processor']) {
-                        $consumerConfiguration = sprintf('%s/%s.conf', $this->config['path'], $name);
-
-                        file_put_contents($consumerConfiguration, $this->renderer->render(
-                            $this->consumerConfiguration->generate($consumer, $route)->toArray())
+                        $this->write(
+                            sprintf('%s.conf', $name),
+                            $this->renderer->render($this->consumerConfiguration->generate($consumer, $route)->toArray())
                         );
 
                         $supervisorConfiguration->addSection(
@@ -84,7 +83,7 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
                                 $name,
                                 $this->supervisorConfiguration->getConsumerProperties(
                                     $consumer,
-                                    $consumerConfiguration
+                                    sprintf('%s/%s.conf', $this->config['path'], $name)
                                 )
                             )
                         );
@@ -100,8 +99,21 @@ class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
             }
         }
 
-        file_put_contents(sprintf('%s/supervisord.conf', $this->config['path']), $this->renderer->render(
+        $this->write('supervisord.conf', $this->renderer->render(
             $supervisorConfiguration->toArray()
         ));
+    }
+
+    /**
+     * @param string $path
+     * @param string $content
+     */
+    private function write($path, $content)
+    {
+        if ($this->filesystem->has($path)) {
+            $this->filesystem->update($path, $content);
+        } else {
+            $this->filesystem->write($path, $content);
+        }
     }
 }

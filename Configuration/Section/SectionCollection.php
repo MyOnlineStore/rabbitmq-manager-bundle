@@ -9,7 +9,7 @@ final class SectionCollection
     /**
      * @var Section[]
      */
-    private $sections;
+    private $sections = [];
 
     /**
      * @param Section[] $sections
