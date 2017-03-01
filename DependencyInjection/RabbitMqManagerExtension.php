@@ -56,6 +56,7 @@ class RabbitMqManagerExtension extends Extension implements PrependExtensionInte
         }
 
         $container->setParameter('mos_rabbitmq_cli_consumer.config', $configuration);
+        $container->setParameter('mos_rabbitmq_cli_consumer.path', $configuration['path']);
     }
 
     /**

@@ -2,7 +2,12 @@ parameters:
     myonlinestore_rabbitmq_manager.process_builder_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactory
     myonlinestore_rabbitmq_manager.process_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessFactory
     myonlinestore_rabbitmq_manager.config_generator.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGenerator
-    phobetor_rabbitmq_supervisor.supervisor_service.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\Supervisor
+    myonlinestore_rabbitmq_manager.supervisor.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\Supervisor
+    myonlinestore_rabbitmq_manager.configuration.consumer_section_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerSectionFactory
+    myonlinestore_rabbitmq_manager.configuration.consumer_configuration.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerConfiguration
+    myonlinestore_rabbitmq_manager.configuration.supervisor_section_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorSectionFactory
+    myonlinestore_rabbitmq_manager.configuration.supervisor_configuration.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorConfiguration
+    myonlinestore_rabbitmq_manager.indigo_ini.renderer.class: Indigo\Ini\Renderer
 
 services:
     myonlinestore_rabbitmq_manager.process_builder_factory:
@@ -16,12 +21,35 @@ services:
     myonlinestore_rabbitmq_manager.config_generator:
         class: "%myonlinestore_rabbitmq_manager.config_generator.class%"
         arguments:
-            - "@myonlinestore_rabbitmq_manager.process_builder_factory"
-            - "@templating"
+            - "@myonlinestore_rabbitmq_manager.configuration.supervisor.configuration"
+            - "@myonlinestore_rabbitmq_manager.configuration.consumer.configuration"
+            - "@myonlinestore_rabbitmq_manager.indigo_ini.renderer"
             - "%mos_rabbitmq_cli_consumer.config%"
 
     myonlinestore_rabbitmq_manager.supervisor:
-        class: "%phobetor_rabbitmq_supervisor.supervisor_service.class%"
+        class: "%myonlinestore_rabbitmq_manager.supervisor.class%"
         arguments:
             - "@myonlinestore_rabbitmq_manager.process_builder_factory"
             - "%mos_rabbitmq_cli_consumer.config%"
+
+    myonlinestore_rabbitmq_manager.configuration.consumer.configuration.section_factory:
+        class: "%myonlinestore_rabbitmq_manager.configuration.consumer_section_factory.class%"
+
+    myonlinestore_rabbitmq_manager.configuration.consumer.configuration:
+        class: "%myonlinestore_rabbitmq_manager.configuration.consumer_configuration.class%"
+        arguments:
+            - "@myonlinestore_rabbitmq_manager.configuration.consumer.configuration.section_factory"
+            - "%mos_rabbitmq_cli_consumer.path%"
+
+    myonlinestore_rabbitmq_manager.configuration.supervisor.configuration.section_factory:
+        class: "%myonlinestore_rabbitmq_manager.configuration.supervisor_section_factory.class%"
+
+    myonlinestore_rabbitmq_manager.configuration.supervisor.configuration:
+        class: "%myonlinestore_rabbitmq_manager.configuration.supervisor_configuration.class%"
+        arguments:
+            - "@myonlinestore_rabbitmq_manager.configuration.supervisor.configuration.section_factory"
+            - "@myonlinestore_rabbitmq_manager.process_builder_factory"
+            - "%mos_rabbitmq_cli_consumer.path%"
+
+    myonlinestore_rabbitmq_manager.indigo_ini.renderer:
+        class: "%myonlinestore_rabbitmq_manager.indigo_ini.renderer.class%"

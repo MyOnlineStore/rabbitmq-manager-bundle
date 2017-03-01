@@ -2,7 +2,16 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\DependencyInjection;
 
+use Indigo\Ini\Renderer;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerConfiguration;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerSectionFactory;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorConfiguration;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorSectionFactory;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\DependencyInjection\RabbitMqManagerExtension;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Generator\RabbitMqConfigGenerator;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactory;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessFactory;
+use MyOnlineStore\Bundle\RabbitMqManagerBundle\Supervisor\Supervisor;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -254,10 +263,17 @@ class RabbitMqManagerExtensionTest extends \PHPUnit_Framework_TestCase
     protected function setParameterWithYamlFileLoader($id, $value)
     {
         $this->containerBuilder->method('setParameter')->withConsecutive(
-            ['myonlinestore_rabbitmq_manager.process_builder_factory.class'],
-            ['myonlinestore_rabbitmq_manager.process_factory.class'],
-            ['myonlinestore_rabbitmq_manager.config_generator.class'],
-            ['phobetor_rabbitmq_supervisor.supervisor_service.class'],
-            [$id, $value]);
+            ['myonlinestore_rabbitmq_manager.process_builder_factory.class', ProcessBuilderFactory::class],
+            ['myonlinestore_rabbitmq_manager.process_factory.class', ProcessFactory::class],
+            ['myonlinestore_rabbitmq_manager.config_generator.class', RabbitMqConfigGenerator::class],
+            ['myonlinestore_rabbitmq_manager.supervisor.class', Supervisor::class],
+            ['myonlinestore_rabbitmq_manager.configuration.consumer_section_factory.class', ConsumerSectionFactory::class],
+            ['myonlinestore_rabbitmq_manager.configuration.consumer_configuration.class', ConsumerConfiguration::class],
+            ['myonlinestore_rabbitmq_manager.configuration.supervisor_section_factory.class', SupervisorSectionFactory::class],
+            ['myonlinestore_rabbitmq_manager.configuration.supervisor_configuration.class', SupervisorConfiguration::class],
+            ['myonlinestore_rabbitmq_manager.indigo_ini.renderer.class', Renderer::class],
+            [$id, $value],
+            ['mos_rabbitmq_cli_consumer.path', $value['path']]
+        );
     }
 }
