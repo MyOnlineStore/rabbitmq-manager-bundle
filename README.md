@@ -6,6 +6,10 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://scrutinizer-ci.com/g/MyOnlineStore/rabbitmq-manager-bundle)
 [![Total Downloads](https://img.shields.io/packagist/dt/MyOnlineStore/rabbitmq-manager-bundle.svg?style=flat-square)](https://packagist.org/packages/MyOnlineStore/rabbitmq-manager-bundle)
 
+## Introduction
+
+This package is based on https://github.com/Phobetor/rabbitmq-supervisor-bundle and has additional support for https://github.com/ricbra/rabbitmq-cli-consumer. To avoid runtime cache in a (more) efficient way.
+
 ## Installation
 
 Require the bundle and its dependencies with composer:
