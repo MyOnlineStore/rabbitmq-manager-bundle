@@ -6,7 +6,7 @@ use MyOnlineStore\Bundle\RabbitMqManagerBundle\Exception\Supervisor\SupervisorAl
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessBuilderFactoryInterface;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Process\ProcessInterface;
 
-class Supervisor implements SupervisorInterface
+final class Supervisor implements SupervisorInterface
 {
     /**
      * @var ProcessBuilderFactoryInterface

@@ -4,7 +4,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Process;
 
 use Symfony\Component\Process\ProcessBuilder as SymfonyProcessBuilder;
 
-class ProcessBuilder extends SymfonyProcessBuilder implements ProcessBuilderInterface
+final class ProcessBuilder extends SymfonyProcessBuilder implements ProcessBuilderInterface
 {
     /**
      * @var ProcessFactoryInterface

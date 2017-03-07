@@ -5,7 +5,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Sect
 use Supervisor\Configuration\Section\Base;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class Exchange extends Base
+final class Exchange extends Base
 {
     /**
      * @inheritdoc

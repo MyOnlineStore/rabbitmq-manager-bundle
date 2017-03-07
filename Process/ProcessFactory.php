@@ -4,7 +4,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Process;
 
 use Symfony\Component\Process\Process as SymfonyProcess;
 
-class ProcessFactory implements ProcessFactoryInterface
+final class ProcessFactory implements ProcessFactoryInterface
 {
     /**
      * @inheritdoc

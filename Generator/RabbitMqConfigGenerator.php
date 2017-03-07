@@ -7,7 +7,7 @@ use League\Flysystem\FilesystemInterface;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerConfiguration;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorConfiguration;
 
-class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
+final class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
 {
     /**
      * @var SupervisorConfiguration

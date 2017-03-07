@@ -5,7 +5,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Sect
 use Supervisor\Configuration\Section\Base;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class Logs extends Base
+final class Logs extends Base
 {
     /**
      * @inheritdoc

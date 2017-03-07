@@ -2,7 +2,7 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Process;
 
-class ProcessBuilderFactory implements ProcessBuilderFactoryInterface
+final class ProcessBuilderFactory implements ProcessBuilderFactoryInterface
 {
     /**
      * @var ProcessFactoryInterface
