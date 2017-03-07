@@ -60,7 +60,7 @@ final class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
      */
     public function generate()
     {
-        $supervisorConfiguration = $this->supervisorConfiguration->generate();
+        $supervisorSection = $this->supervisorConfiguration->generate();
 
         foreach (['consumers', 'rpc_servers'] as $type) {
             foreach ($this->config[$type] as $consumerName => $consumer) {
@@ -73,12 +73,15 @@ final class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
                     $name = sprintf('%s_%s_%d', substr($type, 0, 1), $consumerName, $index);
 
                     if ('cli-consumer' === $consumer['processor']) {
-                        $this->write(
+                        $this->filesystem->put(
                             sprintf('%s.conf', $name),
-                            $this->renderer->render($this->consumerConfiguration->generate($consumer, $route)->toArray())
+
+                            $this->renderer->render(
+                                $this->consumerConfiguration->generate($consumer, $route)->toArray()
+                            )
                         );
 
-                        $supervisorConfiguration->addSection(
+                        $supervisorSection->addSection(
                             $this->supervisorConfiguration->generateProgram(
                                 $name,
                                 $this->supervisorConfiguration->getConsumerProperties(
@@ -88,7 +91,7 @@ final class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
                             )
                         );
                     } else {
-                        $supervisorConfiguration->addSection(
+                        $supervisorSection->addSection(
                             $this->supervisorConfiguration->generateProgram(
                                 $name,
                                 $this->supervisorConfiguration->getBundleProperties($consumer, $route)
@@ -99,21 +102,8 @@ final class RabbitMqConfigGenerator implements RabbitMqConfigGeneratorInterface
             }
         }
 
-        $this->write('supervisord.conf', $this->renderer->render(
-            $supervisorConfiguration->toArray()
+        $this->filesystem->put('supervisord.conf', $this->renderer->render(
+            $supervisorSection->toArray()
         ));
-    }
-
-    /**
-     * @param string $path
-     * @param string $content
-     */
-    private function write($path, $content)
-    {
-        if ($this->filesystem->has($path)) {
-            $this->filesystem->update($path, $content);
-        } else {
-            $this->filesystem->write($path, $content);
-        }
     }
 }

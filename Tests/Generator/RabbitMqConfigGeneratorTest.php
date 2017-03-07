@@ -34,8 +34,12 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->supervisorConfiguration = $this->getMockBuilder(SupervisorConfiguration::class)->disableOriginalConstructor()->getMock();
-        $this->consumerConfiguration = $this->getMockBuilder(ConsumerConfiguration::class)->disableOriginalConstructor()->getMock();
+        $this->supervisorConfiguration = $this->getMockBuilder(SupervisorConfiguration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->consumerConfiguration = $this->getMockBuilder(ConsumerConfiguration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->renderer = $this->getMockBuilder(Renderer::class)->disableOriginalConstructor()->getMock();
         $this->filesystem = $this->getMock(FilesystemInterface::class);
     }
@@ -56,9 +60,7 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->renderer->expects($this->once())->method('render')->with([])->willReturn('foobar');
-
-        $this->filesystem->expects($this->once())->method('has')->with('supervisord.conf')->willReturn(true);
-        $this->filesystem->expects($this->once())->method('update')->with('supervisord.conf', 'foobar');
+        $this->filesystem->expects($this->once())->method('put')->with('supervisord.conf', 'foobar');
 
         $generator = new RabbitMqConfigGenerator(
             $this->supervisorConfiguration,
@@ -98,12 +100,14 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             new SectionCollection()
         );
 
+        $section = $this->getMock(Section::class);
+        $section->method('getName')->willReturn('supervisor');
+        $section->method('getProperties')->willReturn('supervisor-properties');
+
         $this->supervisorConfiguration->expects($this->exactly(2))->method('generateProgram')->withConsecutive(
             ['c_first_consumer_0'],
             ['c_first_consumer_1']
-        )->willReturn(
-            $this->getMock(Section::class)
-        );
+        )->willReturn($section);
 
         $this->supervisorConfiguration->expects($this->exactly(2))->method('getConsumerProperties')->withConsecutive(
             [[
@@ -157,23 +161,17 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             new SectionCollection()
         );
 
-        $this->renderer->expects($this->exactly(3))->method('render');
+        $this->renderer->expects($this->exactly(3))->method('render')->withConsecutive(
+            [[]],
+            [[]],
+            [['supervisor' => 'supervisor-properties']]
+        )->willReturn('rendered-content');
 
-        $this->filesystem->expects($this->exactly(3))->method('has')->withConsecutive(
-            ['c_first_consumer_0.conf'],
-            ['c_first_consumer_1.conf'],
-            ['supervisord.conf']
-        )->willReturnOnConsecutiveCalls(
-            true,
-            false,
-            true
+        $this->filesystem->expects($this->exactly(3))->method('put')->withConsecutive(
+            ['c_first_consumer_0.conf', 'rendered-content'],
+            ['c_first_consumer_1.conf', 'rendered-content'],
+            ['supervisord.conf', 'rendered-content']
         );
-
-        $this->filesystem->expects($this->exactly(2))->method('update')->withConsecutive(
-            ['c_first_consumer_0.conf'],
-            ['supervisord.conf']
-        );
-        $this->filesystem->expects($this->exactly(1))->method('write')->with('c_first_consumer_1.conf');
 
         $generator = new RabbitMqConfigGenerator(
             $this->supervisorConfiguration,
@@ -213,12 +211,14 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             new SectionCollection()
         );
 
+        $section = $this->getMock(Section::class);
+        $section->method('getName')->willReturn('supervisor');
+        $section->method('getProperties')->willReturn('supervisor-properties');
+
         $this->supervisorConfiguration->expects($this->exactly(2))->method('generateProgram')->withConsecutive(
             ['c_first_consumer_0'],
             ['c_first_consumer_1']
-        )->willReturn(
-            $this->getMock(Section::class)
-        );
+        )->willReturn($section);
 
         $this->supervisorConfiguration->expects($this->exactly(2))->method('getBundleProperties')->withConsecutive(
             [[
@@ -245,11 +245,10 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             ], 'second-routing']
         )->willReturn([]);
 
-        $this->renderer->expects($this->once())->method('render');
-
-        $this->filesystem->expects($this->once())->method('has')->with('supervisord.conf')->willReturn(false);
-
-        $this->filesystem->expects($this->once())->method('write')->with('supervisord.conf');
+        $this->renderer->expects($this->once())->method('render')
+            ->with(['supervisor' => 'supervisor-properties'])
+            ->willReturn('rendered-content');
+        $this->filesystem->expects($this->once())->method('put')->with('supervisord.conf', 'rendered-content');
 
         $generator = new RabbitMqConfigGenerator(
             $this->supervisorConfiguration,
@@ -289,12 +288,14 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             new SectionCollection()
         );
 
+        $section = $this->getMock(Section::class);
+        $section->method('getName')->willReturn('supervisor');
+        $section->method('getProperties')->willReturn('supervisor-properties');
+
         $this->supervisorConfiguration->expects($this->exactly(2))->method('generateProgram')->withConsecutive(
             ['r_first_consumer_0'],
             ['r_first_consumer_1']
-        )->willReturn(
-            $this->getMock(Section::class)
-        );
+        )->willReturn($section);
 
         $this->supervisorConfiguration->expects($this->exactly(2))->method('getBundleProperties')->withConsecutive(
             [[
@@ -321,11 +322,11 @@ class RabbitMqConfigGeneratorTest extends \PHPUnit_Framework_TestCase
             ], 'second-routing']
         )->willReturn([]);
 
-        $this->renderer->expects($this->once())->method('render');
+        $this->renderer->expects($this->once())->method('render')
+            ->with(['supervisor' => 'supervisor-properties'])
+            ->willReturn('rendered-content');
 
-        $this->filesystem->expects($this->once())->method('has')->with('supervisord.conf')->willReturn(false);
-
-        $this->filesystem->expects($this->once())->method('write')->with('supervisord.conf');
+        $this->filesystem->expects($this->once())->method('put')->with('supervisord.conf', 'rendered-content');
 
         $generator = new RabbitMqConfigGenerator(
             $this->supervisorConfiguration,
