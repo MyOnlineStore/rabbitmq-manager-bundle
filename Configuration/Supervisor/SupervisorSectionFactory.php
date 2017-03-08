@@ -8,7 +8,7 @@ use Supervisor\Configuration\Section\Supervisorctl;
 use Supervisor\Configuration\Section\Supervisord;
 use Supervisor\Configuration\Section\UnixHttpServer;
 
-class SupervisorSectionFactory implements SupervisorSectionFactoryInterface
+final class SupervisorSectionFactory implements SupervisorSectionFactoryInterface
 {
     /**
      * @inheritdoc

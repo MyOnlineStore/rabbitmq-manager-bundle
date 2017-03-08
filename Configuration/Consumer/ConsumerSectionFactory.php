@@ -8,7 +8,7 @@ use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Section\Pr
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Section\Queue;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Section\Rabbitmq;
 
-class ConsumerSectionFactory implements ConsumerSectionFactoryInterface
+final class ConsumerSectionFactory implements ConsumerSectionFactoryInterface
 {
     /**
      * @inheritdoc

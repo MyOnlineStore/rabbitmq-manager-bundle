@@ -16,7 +16,6 @@ class ConsumerConfiguration
      */
     private $path;
 
-
     /**
      * @param ConsumerSectionFactoryInterface $sectionFactory
      * @param string                          $path

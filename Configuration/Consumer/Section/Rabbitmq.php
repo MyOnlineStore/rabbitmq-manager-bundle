@@ -5,7 +5,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Sect
 use Supervisor\Configuration\Section\Base;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class Rabbitmq extends Base
+final class Rabbitmq extends Base
 {
     /**
      * @inheritdoc

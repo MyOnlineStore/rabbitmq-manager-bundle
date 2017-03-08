@@ -5,7 +5,7 @@ namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\Sect
 use Supervisor\Configuration\Section\Base;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class Prefetch extends Base
+final class Prefetch extends Base
 {
     /**
      * @inheritdoc
