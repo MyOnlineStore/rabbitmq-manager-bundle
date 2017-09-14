@@ -8,6 +8,7 @@ parameters:
     myonlinestore_rabbitmq_manager.configuration.supervisor_section_factory.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorSectionFactory
     myonlinestore_rabbitmq_manager.configuration.supervisor_configuration.class: MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Supervisor\SupervisorConfiguration
     myonlinestore_rabbitmq_manager.indigo_ini.renderer.class: Indigo\Ini\Renderer
+    myonlinestore_rabbitmq_manager.http_client.class: GuzzleHttp\Client
 
 services:
     myonlinestore_rabbitmq_manager.process_builder_factory:
@@ -64,3 +65,6 @@ services:
 
     myonlinestore_rabbitmq_manager.indigo_ini.renderer:
         class: "%myonlinestore_rabbitmq_manager.indigo_ini.renderer.class%"
+
+    myonlinestore_rabbitmq_manager.http_client:
+        class: "%myonlinestore_rabbitmq_manager.http_client.class%"
