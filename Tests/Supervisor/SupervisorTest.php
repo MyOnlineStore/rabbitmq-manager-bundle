@@ -59,12 +59,10 @@ class SupervisorTest extends \PHPUnit_Framework_TestCase
 
         $processBuilder->expects(self::once())->method('setWorkingDirectory')->with('/path/to/supervisor');
         $processBuilder->expects($this->once())->method('setPrefix')->with('supervisord');
-        $processBuilder->expects($this->exactly(3))->method('add')->withConsecutive(
+        $processBuilder->expects($this->exactly(2))->method('add')->withConsecutive(
             ['--configuration=/path/to/supervisor/supervisord.conf'],
-            ['--identifier=49e4b94fd261dc17cfecef2a6d3ea83b91d69f14'],
-            [' &']
+            ['--identifier=49e4b94fd261dc17cfecef2a6d3ea83b91d69f14']
         );
-        $processBuilder->expects($this->once())->method('disableOutput');
 
         $processBuilder->expects($this->once())->method('getProcess')->willReturn(
             $process = $this->getMock(ProcessInterface::class)

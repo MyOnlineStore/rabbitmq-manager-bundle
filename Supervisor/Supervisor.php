@@ -52,8 +52,6 @@ final class Supervisor implements SupervisorInterface
         $processBuilder->setPrefix('supervisord');
         $processBuilder->add(sprintf('--configuration=%s/%s', $this->path, 'supervisord.conf'));
         $processBuilder->add(sprintf('--identifier=%s', sha1($this->path)));
-        $processBuilder->add(' &');
-        $processBuilder->disableOutput();
 
         $processBuilder->getProcess()->run();
     }
