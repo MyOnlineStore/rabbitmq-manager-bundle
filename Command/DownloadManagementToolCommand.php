@@ -16,7 +16,12 @@ final class DownloadManagementToolCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->addArgument('filename', InputArgument::OPTIONAL, 'Filename, for path see: rabbit_mq_manager.path', 'rabbitmqadmin')
+            ->addArgument(
+                'filename',
+                InputArgument::OPTIONAL,
+                'Filename, for path see: rabbit_mq_manager.path',
+                'rabbitmqadmin'
+            )
             ->addOption('hostname', null, InputOption::VALUE_REQUIRED, 'Hostname', 'localhost')
             ->addOption('port', null, InputOption::VALUE_REQUIRED, 'Port', 15672)
             ->setName('rabbitmq-manager:download:management-tool')
@@ -43,6 +48,14 @@ final class DownloadManagementToolCommand extends ContainerAwareCommand
         $filesystem->put(
             $input->getArgument('filename'),
             $client->send($request)->getBody()->getContents()
+        );
+
+        $output->writeln(
+            sprintf(
+                'Saved to <comment>%s/%s</comment>',
+                realpath($this->getContainer()->getParameter('mos_rabbitmq_cli_consumer.path')),
+                $input->getArgument('filename')
+            )
         );
     }
 }
