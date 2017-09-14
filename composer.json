@@ -20,7 +20,8 @@
         "symfony/console": "~2.7 || ~3.0",
         "symfony/process": "~2.7 || ~3.0",
         "symfony/templating": "~2.7 || ~3.0",
-        "supervisorphp/configuration": "^0.2.1"
+        "supervisorphp/configuration": "^0.2.1",
+        "guzzlehttp/guzzle": "^5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8",
