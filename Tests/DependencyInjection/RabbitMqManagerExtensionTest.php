@@ -2,6 +2,7 @@
 
 namespace MyOnlineStore\Bundle\RabbitMqManagerBundle\Tests\DependencyInjection;
 
+use GuzzleHttp\Client;
 use Indigo\Ini\Renderer;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerConfiguration;
 use MyOnlineStore\Bundle\RabbitMqManagerBundle\Configuration\Consumer\ConsumerSectionFactory;
@@ -272,6 +273,7 @@ class RabbitMqManagerExtensionTest extends \PHPUnit_Framework_TestCase
             ['myonlinestore_rabbitmq_manager.configuration.supervisor_section_factory.class', SupervisorSectionFactory::class],
             ['myonlinestore_rabbitmq_manager.configuration.supervisor_configuration.class', SupervisorConfiguration::class],
             ['myonlinestore_rabbitmq_manager.indigo_ini.renderer.class', Renderer::class],
+            ['myonlinestore_rabbitmq_manager.http_client.class', Client::class],
             [$id, $value],
             ['mos_rabbitmq_cli_consumer.path', $value['path']]
         );
